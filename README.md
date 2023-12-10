@@ -34,7 +34,7 @@ The visualization of masks used for our framework can be seen below:
 
 A visualization of our implementation can finally be seen below:
 
-<img src="https://gitlab.eecs.umich.edu/v_slam/orb-slam_dynamic/-/raw/main/media/demo.gif" alt="masked-ORB-SLAM3-demo" width="1200"/>
+<img src="media/demo.gif" alt="masked-ORB-SLAM3-demo" width="1200"/>
 
 <br>
 
