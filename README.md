@@ -27,7 +27,7 @@ Thus, based off the obvious inaccuracy in semantic masks for the ORB-SLAM, we pr
 
 The visualization of masks used for our framework can be seen below: 
 <p align="center">
-<img src="https://gitlab.eecs.umich.edu/v_slam/orb-slam_dynamic/-/raw/main/media/mask_KITTI.gif" alt="mask_KITTI" width="1200"/>
+<img src="media/mask_KITTI.gif" alt="mask_KITTI" width="1200"/>
 
 <!--![KITTI mask](media/mask_KITTI.gif) -->
 </p>
