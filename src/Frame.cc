@@ -238,18 +238,18 @@ Frame::Frame(const cv::Mat &mask, const cv::Mat &imGray, const cv::Mat &imDepth,
     std::vector<cv::KeyPoint> _mvKeys;
     cv::Mat _mDescriptors;
 
-    for (int i = 0; i < N; ++i) {
+    for (int i = 0; i < M; ++i){
         int x_r = floor(mvKeys[i].pt.x);
         int y_r = floor(mvKeys[i].pt.y);
-        if (mask.at<cv::Vec4b>(y_r, x_r)[1] <= 0 && mask.at<cv::Vec4b>(y_r + 1, x_r)[1] <= 0 &&
-            mask.at<cv::Vec4b>(y_r, x_r + 1)[1] <= 0 && mask.at<cv::Vec4b>(y_r + 1, x_r + 1)[1] <= 0) {
+        if (mask.at<cv::Vec4b>(y_r, x_r)[1] > 0 || mask.at<cv::Vec4b>(y_r+1, x_r)[1] > 0 || mask.at<cv::Vec4b>(y_r, x_r+1)[1] > 0 || mask.at<cv::Vec4b>(y_r+1, x_r+1)[1] > 0){
+            num_erased++;
+        }
+        else {
             _mvKeys.push_back(mvKeys[i]);
             _mDescriptors.push_back(mDescriptors.row(i));
         }
     }
-
-    mvKeys = _mvKeys;
-    mDescriptors = _mDescriptors;
+    std::cout << "Number of features erased: " << num_erased << std::endl;
 
     mvKeys = _mvKeys;
     mDescriptors = _mDescriptors;
