@@ -20,21 +20,21 @@ First, we recommend you read through our paper uploaded on this repository/docs.
 Thus, based off the obvious inaccuracy in semantic masks for the ORB-SLAM, we propose the following architecture for our <strong>"Masked ORB-SLAM3 pipeline</strong>":
 
 <p align="center">
- ![ORB-SLAM3 Architecture](media/masked_orbslam_arch2.png)
+ <img src="media/masked_orbslam_arch2.png" alt="ORB-SLAM3 Architecture" width="1200"/>
 </p>
 
 <br>
 
 The visualization of masks used for our framework can be seen below: 
 <p align="center">
-<img src="https://gitlab.eecs.umich.edu/v_slam/orb-slam_dynamic/-/raw/main/media/mask_KITTI.gif" alt="mask_KITTI" width="1200"/>
+<img src="media/mask_KITTI.gif" alt="mask_KITTI" width="1200"/>
 
 <!--![KITTI mask](media/mask_KITTI.gif) -->
 </p>
 
 A visualization of our implementation can finally be seen below:
 
-<img src="https://gitlab.eecs.umich.edu/v_slam/orb-slam_dynamic/-/raw/main/media/demo.gif" alt="masked-ORB-SLAM3-demo" width="1200"/>
+<img src="media/demo.gif" alt="masked-ORB-SLAM3-demo" width="1200"/>
 
 <br>
 
