@@ -199,7 +199,8 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeSt
     monoRight = -1;
 }
 
-Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeStamp, ORBextractor* extractor,ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth, GeometricCamera* pCamera,Frame* pPrevF, const IMU::Calib &ImuCalib)
+// rgbd-mask-Frame
+Frame::Frame(const cv::Mat &mask, const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeStamp, ORBextractor* extractor,ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth, GeometricCamera* pCamera,Frame* pPrevF, const IMU::Calib &ImuCalib)
     :mpcpi(NULL),mpORBvocabulary(voc),mpORBextractorLeft(extractor),mpORBextractorRight(static_cast<ORBextractor*>(NULL)),
      mTimeStamp(timeStamp), mK(K.clone()),mDistCoef(distCoef.clone()), mbf(bf), mThDepth(thDepth),
      mImuCalib(ImuCalib), mpImuPreintegrated(NULL), mpPrevFrame(pPrevF), mpImuPreintegratedFrame(NULL), mpReferenceKF(static_cast<KeyFrame*>(NULL)), mbImuPreintegrated(false),
@@ -228,11 +229,31 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeSt
     mTimeORB_Ext = std::chrono::duration_cast<std::chrono::duration<double,std::milli> >(time_EndExtORB - time_StartExtORB).count();
 #endif
 
-
     N = mvKeys.size();
 
     if(mvKeys.empty())
         return;
+
+    // Mask processing (similar to Mono-mask-Frame)
+    std::vector<cv::KeyPoint> _mvKeys;
+    cv::Mat _mDescriptors;
+
+    for (int i = 0; i < N; ++i) {
+        int x_r = floor(mvKeys[i].pt.x);
+        int y_r = floor(mvKeys[i].pt.y);
+        if (mask.at<cv::Vec4b>(y_r, x_r)[1] <= 0 && mask.at<cv::Vec4b>(y_r + 1, x_r)[1] <= 0 &&
+            mask.at<cv::Vec4b>(y_r, x_r + 1)[1] <= 0 && mask.at<cv::Vec4b>(y_r + 1, x_r + 1)[1] <= 0) {
+            _mvKeys.push_back(mvKeys[i]);
+            _mDescriptors.push_back(mDescriptors.row(i));
+        }
+    }
+
+    mvKeys = _mvKeys;
+    mDescriptors = _mDescriptors;
+
+    mvKeys = _mvKeys;
+    mDescriptors = _mDescriptors;
+    N = mvKeys.size();
 
     UndistortKeyPoints();
 

@@ -27,23 +27,23 @@
 
 using namespace std;
 
+// Function to load images along with timestamps
 void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageFilenamesRGB,
-                vector<string> &vstrImageFilenamesD, vector<double> &vTimestamps);
+                vector<string> &vstrImageFilenamesD, vector<string> &vstrMaskFilenames, vector<double> &vTimestamps);
 
 int main(int argc, char **argv)
 {
-    if(argc != 5)
+    if(argc != 6)
     {
-        cerr << endl << "Usage: ./rgbd_tum path_to_vocabulary path_to_settings path_to_sequence path_to_association" << endl;
+        cerr << endl << "Usage: ./rgbd_tum path_to_vocabulary path_to_settings path_to_sequence path_to_association path_to_mask" << endl;
         return 1;
     }
 
     // Retrieve paths to images
-    vector<string> vstrImageFilenamesRGB;
-    vector<string> vstrImageFilenamesD;
+    vector<string> vstrImageFilenamesRGB, vstrImageFilenamesD, vstrMaskFilenames;
     vector<double> vTimestamps;
     string strAssociationFilename = string(argv[4]);
-    LoadImages(strAssociationFilename, vstrImageFilenamesRGB, vstrImageFilenamesD, vTimestamps);
+    LoadImages(strAssociationFilename, vstrImageFilenamesRGB, vstrImageFilenamesD, vstrMaskFilenames, vTimestamps);
 
     // Check consistency in the number of images and depthmaps
     int nImages = vstrImageFilenamesRGB.size();
@@ -52,32 +52,33 @@ int main(int argc, char **argv)
         cerr << endl << "No images found in provided path." << endl;
         return 1;
     }
-    else if(vstrImageFilenamesD.size()!=vstrImageFilenamesRGB.size())
+    else if(vstrImageFilenamesD.size()!=vstrImageFilenamesRGB.size() || vstrMaskFilenames.size()!=vstrImageFilenamesRGB.size())
     {
-        cerr << endl << "Different number of images for rgb and depth." << endl;
+        cerr << endl << "Different number of images for RGB, Depth, and Masks." << endl;
         return 1;
     }
 
-    // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::RGBD,true);
+    // Create SLAM system
+    ORB_SLAM3::System SLAM(argv[1], argv[2], ORB_SLAM3::System::RGBD, true);
 
     // Vector for tracking time statistics
     vector<float> vTimesTrack;
     vTimesTrack.resize(nImages);
 
     // Main loop
-    cv::Mat imRGB, imD;
-    for(int ni=0; ni<nImages; ni++)
+    cv::Mat imRGB, imD, msk;
+    for(int ni = 0; ni < nImages; ni++)
     {
-        // Read image and depthmap from file
-        imRGB = cv::imread(string(argv[3])+"/"+vstrImageFilenamesRGB[ni],cv::IMREAD_UNCHANGED); //,cv::IMREAD_UNCHANGED);
-        imD = cv::imread(string(argv[3])+"/"+vstrImageFilenamesD[ni],cv::IMREAD_UNCHANGED); //,cv::IMREAD_UNCHANGED);
+        // Read image, depthmap and mask from file
+        imRGB = cv::imread(string(argv[3]) + "/" + vstrImageFilenamesRGB[ni], cv::IMREAD_UNCHANGED);
+        imD = cv::imread(string(argv[3]) + "/" + vstrImageFilenamesD[ni], cv::IMREAD_UNCHANGED);
+        msk = cv::imread(string(argv[5]) + "/" + vstrMaskFilenames[ni], cv::IMREAD_UNCHANGED); // Load mask
+
         double tframe = vTimestamps[ni];
 
-        if(imRGB.empty())
+        if(imRGB.empty() || imD.empty() || msk.empty())
         {
-            cerr << endl << "Failed to load image at: "
-                 << string(argv[3]) << "/" << vstrImageFilenamesRGB[ni] << endl;
+            cerr << endl << "Failed to load image, depthmap, or mask at index: " << ni << endl;
             return 1;
         }
 
@@ -87,8 +88,8 @@ int main(int argc, char **argv)
         std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
 #endif
 
-        // Pass the image to the SLAM system
-        SLAM.TrackRGBD(imRGB,imD,tframe);
+        // Pass the images and mask to the SLAM system
+        SLAM.TrackRGBD(msk, imRGB, imD, tframe); // Modified SLAM system call
 
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -115,46 +116,47 @@ int main(int argc, char **argv)
     SLAM.Shutdown();
 
     // Tracking time statistics
-    sort(vTimesTrack.begin(),vTimesTrack.end());
+    sort(vTimesTrack.begin(), vTimesTrack.end());
     float totaltime = 0;
-    for(int ni=0; ni<nImages; ni++)
+    for(int ni = 0; ni < nImages; ni++)
     {
-        totaltime+=vTimesTrack[ni];
+        totaltime += vTimesTrack[ni];
     }
     cout << "-------" << endl << endl;
-    cout << "median tracking time: " << vTimesTrack[nImages/2] << endl;
-    cout << "mean tracking time: " << totaltime/nImages << endl;
+    cout << "median tracking time: " << vTimesTrack[nImages / 2] << endl;
+    cout << "mean tracking time: " << totaltime / nImages << endl;
 
     // Save camera trajectory
     SLAM.SaveTrajectoryTUM("CameraTrajectory.txt");
-    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");   
+    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
 
     return 0;
 }
 
 void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageFilenamesRGB,
-                vector<string> &vstrImageFilenamesD, vector<double> &vTimestamps)
+                vector<string> &vstrImageFilenamesD, vector<string> &vstrMaskFilenames, vector<double> &vTimestamps)
 {
     ifstream fAssociation;
     fAssociation.open(strAssociationFilename.c_str());
     while(!fAssociation.eof())
     {
         string s;
-        getline(fAssociation,s);
+        getline(fAssociation, s);
         if(!s.empty())
         {
             stringstream ss;
             ss << s;
             double t;
-            string sRGB, sD;
+            string sRGB, sD, sMask;
             ss >> t;
             vTimestamps.push_back(t);
             ss >> sRGB;
             vstrImageFilenamesRGB.push_back(sRGB);
-            ss >> t;
+            ss >> t; // Read the timestamp again (if it's provided separately for Depth)
             ss >> sD;
             vstrImageFilenamesD.push_back(sD);
-
+            ss >> sMask; // Reading mask filename
+            vstrMaskFilenames.push_back(sMask);
         }
     }
 }
