@@ -211,7 +211,7 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const
     return Tcw;
 }
 
-cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp, string filename)
+cv::Mat System::TrackRGBD(const cv::Mat &mask, const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp, string filename)
 {
     if(mSensor!=RGBD)
     {
