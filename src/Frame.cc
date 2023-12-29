@@ -230,6 +230,9 @@ Frame::Frame(const cv::Mat &mask, const cv::Mat &imGray, const cv::Mat &imDepth,
 #endif
 
     N = mvKeys.size();
+    
+    int M = mvKeys.size();
+    int num_erased = 0;
 
     if(mvKeys.empty())
         return;
