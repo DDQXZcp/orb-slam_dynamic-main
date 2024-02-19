@@ -34,17 +34,25 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames,
 
 int main(int argc, char **argv)
 {
-    if(argc != 4)
+    if(argc != 5)
     {
         cerr << endl << "Usage: ./mono_tum path_to_vocabulary path_to_settings path_to_sequence" << endl;
         return 1;
     }
 
     // Retrieve paths to images
+    // Extract RGB frames, argv[3] is path_to_sequence
     vector<string> vstrImageFilenames;
     vector<double> vTimestamps;
     string strFile = string(argv[3])+"/rgb.txt";
     LoadImages(strFile, vstrImageFilenames, vTimestamps);
+    // Extract Mask frames, argv[4] is path_to_sequence
+    vector<string> vstrMaskFilenames;
+    vector<double> vTimestamps2;
+    string maskFile = string(argv[3])+"/mask.txt";
+    LoadImages(maskFile, vstrMaskFilenames, vTimestamps2);
+    // Todo: Add time stamps for masks
+    
 
     int nImages = vstrImageFilenames.size();
 
@@ -57,10 +65,15 @@ int main(int argc, char **argv)
 
     // Main loop
     cv::Mat im;
+    cv::Mat msk; //Add mask variables
+
+    std::cout<< "mono_tum start"<< std::endl;
+
     for(int ni=0; ni<nImages; ni++)
     {
         // Read image from file
         im = cv::imread(string(argv[3])+"/"+vstrImageFilenames[ni],cv::IMREAD_UNCHANGED);
+        msk = cv::imread(vstrMaskFilenames[ni],cv::IMREAD_UNCHANGED);
         double tframe = vTimestamps[ni];
 
         if(im.empty())
@@ -74,6 +87,7 @@ int main(int argc, char **argv)
 
         // Pass the image to the SLAM system
         SLAM.TrackMonocular(im,tframe);
+        // mono_kitti is SLAM.TrackMonocular( msk, im ,tframe,vector<ORB_SLAM3::IMU::Point>(), vstrImageFilenames[ni]);
 
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
 
@@ -91,6 +105,7 @@ int main(int argc, char **argv)
         if(ttrack<T)
             usleep((T-ttrack)*1e6);
     }
+    std::cout<< "mono_tum end"<< std::endl;
 
     // Stop all threads
     SLAM.Shutdown();
