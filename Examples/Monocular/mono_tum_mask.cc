@@ -46,6 +46,11 @@ int main(int argc, char **argv)
     string strFile = string(argv[3])+"/rgb.txt";
     LoadImages(strFile, vstrImageFilenames, vTimestamps);
 
+    vector<string> vstrMaskFilenames;
+    vector<double> vTimestamps2;
+    string strFile_mask = string(argv[3])+"/mask.txt";
+    LoadImages(strFile_mask, vstrMaskFilenames, vTimestamps2);
+
     int nImages = vstrImageFilenames.size();
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
@@ -57,10 +62,15 @@ int main(int argc, char **argv)
 
     // Main loop
     cv::Mat im;
+    cv::Mat msk;
+
+    std::cout<< "mono_tum start"<< std::endl;
+
     for(int ni=0; ni<nImages; ni++)
     {
         // Read image from file
         im = cv::imread(string(argv[3])+"/"+vstrImageFilenames[ni],cv::IMREAD_UNCHANGED);
+        msk = cv::imread(string(argv[3])+"/"+vstrMaskFilenames[ni],cv::IMREAD_UNCHANGED);
         double tframe = vTimestamps[ni];
 
         if(im.empty())
@@ -73,7 +83,7 @@ int main(int argc, char **argv)
         std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
 
         // Pass the image to the SLAM system
-        SLAM.TrackMonocular(im,tframe);
+        SLAM.TrackMonocular(msk,im,tframe,vector<ORB_SLAM3::IMU::Point>(), vstrImageFilenames[ni]);
 
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
 
@@ -92,6 +102,8 @@ int main(int argc, char **argv)
             usleep((T-ttrack)*1e6);
     }
 
+    std::cout<< "mono_tum end"<< std::endl;
+
     // Stop all threads
     SLAM.Shutdown();
 
@@ -108,6 +120,7 @@ int main(int argc, char **argv)
 
     // Save camera trajectory
     SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
+    SLAM.SaveTrajectoryTUM("FullFrameTrajectoryTUM.txt");  
 
     return 0;
 }

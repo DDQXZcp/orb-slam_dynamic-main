@@ -120,9 +120,13 @@ ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
 # RGB-D examples
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/RGB-D)
 
-add_executable(rgbd_tum
-Examples/RGB-D/rgbd_tum.cc)
-target_link_libraries(rgbd_tum ${PROJECT_NAME})
+# add_executable(rgbd_tum
+# Examples/RGB-D/rgbd_tum.cc)
+# target_link_libraries(rgbd_tum ${PROJECT_NAME})
+
+add_executable(rgbd_tum_mask
+Examples/RGB-D/rgbd_tum_mask.cc)
+target_link_libraries(rgbd_tum_mask ${PROJECT_NAME})
 
 
 # Stereo examples
@@ -143,9 +147,9 @@ target_link_libraries(rgbd_tum ${PROJECT_NAME})
 # Monocular examples
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
 
-add_executable(mono_tum
-Examples/Monocular/mono_tum.cc)
-target_link_libraries(mono_tum ${PROJECT_NAME})
+# add_executable(mono_tum
+# Examples/Monocular/mono_tum.cc)
+# target_link_libraries(mono_tum ${PROJECT_NAME})
 
 add_executable(mono_tum_mask
         Examples/Monocular/mono_tum_mask.cc)
