@@ -73,6 +73,9 @@ int main(int argc, char **argv)
         msk = cv::imread(string(argv[3])+"/"+vstrMaskFilenames[ni],cv::IMREAD_UNCHANGED);
         double tframe = vTimestamps[ni];
 
+        // std::cout<< string(argv[3])+"/"+vstrImageFilenames[ni] << std::endl;
+        // std::cout<< string(argv[3])+"/"+vstrMaskFilenames[ni] << std::endl;
+
         if(im.empty())
         {
             cerr << endl << "Failed to load image at: "

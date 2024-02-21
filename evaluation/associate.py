@@ -46,7 +46,7 @@ import os
 import numpy
 
 
-def read_file_list(filename,remove_bounds):
+def read_file_list(filename):
     """
     Reads a trajectory from a text file. 
     
@@ -63,9 +63,7 @@ def read_file_list(filename,remove_bounds):
     """
     file = open(filename)
     data = file.read()
-    lines = data.replace(","," ").replace("\t"," ").split("\n")
-    if remove_bounds:
-        lines = lines[100:-100]
+    lines = data.replace(","," ").replace("\t"," ").split("\n") 
     list = [[v.strip() for v in line.split(" ") if v.strip()!=""] for line in lines if len(line)>0 and line[0]!="#"]
     list = [(float(l[0]),l[1:]) for l in list if len(l)>1]
     return dict(list)
