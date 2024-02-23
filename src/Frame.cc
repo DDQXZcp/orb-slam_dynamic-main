@@ -386,8 +386,8 @@ Frame::Frame( const cv::Mat &mask, const cv::Mat &imGray, const double &timeStam
         }
         std::cout<< "Erase featrues number ="<<  num << std::endl;
 
-        // mvKeys = _mvKeys;
-        // mDescriptors =_mDescriptors;
+        mvKeys = _mvKeys;
+        mDescriptors =_mDescriptors;
     }
 
     N = mvKeys.size();
