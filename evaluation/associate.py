@@ -98,6 +98,18 @@ def associate(first_list, second_list,offset,max_difference):
             matches.append((a, b))
     
     matches.sort()
+
+    print("first_list: ", len(first_list))
+    print("second_list: ", len(second_list))
+    print("matches: ", len(matches))
+
+    output_file = "matches.txt"
+
+    # Save matches to a text file
+    with open(output_file, 'w') as f:
+        for match in matches:
+            f.write("%s %s\n" % (match[0], match[1]))
+
     return matches
 
 if __name__ == '__main__':
