@@ -103,12 +103,12 @@ def associate(first_list, second_list,offset,max_difference):
     print("second_list: ", len(second_list))
     print("matches: ", len(matches))
 
-    output_file = "matches.txt"
+    # output_file = "matches.txt"
 
-    # Save matches to a text file
-    with open(output_file, 'w') as f:
-        for match in matches:
-            f.write("%s %s\n" % (match[0], match[1]))
+    # # Save matches to a text file
+    # with open(output_file, 'w') as f:
+    #     for match in matches:
+    #         f.write("%s %s\n" % (match[0], match[1]))
 
     return matches
 
