@@ -130,6 +130,7 @@ if __name__=="__main__":
     first_list = associate.read_file_list(args.first_file)
     second_list = associate.read_file_list(args.second_file)
     third_list = associate.read_file_list(args.third_file)
+    print(args.first_file, args.second_file, args.third_file)
 
     second_keys = sorted(second_list.keys())
     third_keys = sorted(third_list.keys())
