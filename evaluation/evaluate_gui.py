@@ -56,8 +56,8 @@ with gr.Blocks() as app:
         visualize_btn = gr.Button("Visualize Trajectories")
     with gr.Row():
         plot_output_gt = gr.Plot(label="Groundtruth Trajectory Visualization")
-        plot_output_t1 = gr.Plot(label="Trajectory 1 Visualization")
-        plot_output_t2 = gr.Plot(label="Trajectory 2 Visualization")
+        plot_output_t1 = gr.Plot(label="Trajectory (with mask) Visualization")
+        plot_output_t2 = gr.Plot(label="Trajectory (without mask) Visualization")
     with gr.Row():
         ate_output1 = gr.Text(label="ATE for Trajectory 1")
         ate_output2 = gr.Text(label="ATE for Trajectory 2")
