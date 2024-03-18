@@ -5,6 +5,8 @@ import plotly.graph_objects as go
 import associate
 import evaluate_ate
 import evaluate_rpe
+import mask_combine
+import mask_associate
 
 # Gradio 3.48
 # Python 3
@@ -69,6 +71,14 @@ with gr.Blocks() as app:
         rpe_pair1 = gr.Text(label="Match Pairs for Trajectory 1")
         rpe_pair2 = gr.Text(label="Match Pairs for Trajectory 2")
 
+    with gr.Row():
+        mask_folder_path = gr.Textbox(label="Path to folders containing masks", value = "/home/ubuntu/Downloads/rgbd_dataset_freiburg3_walking_xyz")
+        combine_masks_btn = gr.Button("Combine Masks")
+        mask_combine_output = gr.Text(label="Mask Combination Result")
+    with gr.Row():
+        associate_folder_path = gr.Textbox(label="Path to folders containing txt", value = "/home/ubuntu/Downloads/rgbd_dataset_freiburg3_walking_xyz")
+        associate_txt_btn = gr.Button("associate")
+
     def visualize_all(groundtruth_path, trajectory1_path, trajectory2_path):
         # Load and parse the trajectory data
         gt_data = associate.read_file_list_rotate(groundtruth_path, x=90)
@@ -123,6 +133,25 @@ with gr.Blocks() as app:
         inputs=[groundtruth_path, trajectory1_path, trajectory2_path],
         outputs=[ate_output1, ate_output2, ate_pair1, ate_pair2, rpe_output1, rpe_output2, rpe_pair1, rpe_pair2]
     ) 
+
+    def combine_masks(mask_folder_path):
+        mask_combine.combine_masks(mask_folder_path)
+
+    combine_masks_btn.click(
+        fn=combine_masks,
+        inputs=mask_folder_path,
+        outputs=mask_combine_output
+    )
+
+    def wrap_associate_and_write(folder_path):
+        # Wrapper function to match Gradio expectations
+        mask_associate.associate_and_write(folder_path)
+        return f"Associations written to {folder_path}/associate.txt."
+    
+    associate_txt_btn.click(
+        fn=wrap_associate_and_write,
+        inputs=associate_folder_path
+    )
 
 if __name__ == "__main__":
     app.launch()

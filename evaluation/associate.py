@@ -52,8 +52,4 @@ def associate(first_list, second_list, offset, max_difference):
 
     matches.sort()
 
-    print("first_list: ", len(first_list))
-    print("second_list: ", len(second_list))
-    print("matches: ", len(matches))
-
     return matches

@@ -74,7 +74,4 @@ def compute_ate(groundtruth_path, trajectory1_path, trajectory2_path):
     rot_3, trans_3, trans_error_3 = align(third_xyz, first_xyz_3)
     ATE_3 = numpy.sqrt(numpy.dot(trans_error_3, trans_error_3) / len(trans_error_3))
 
-    print("ATE for the second trajectory: {:.3f} m".format(ATE_2))
-    print("ATE for the third trajectory: {:.3f} m".format(ATE_3))
-
     return ATE_2, ATE_3, len(matches_2), len(matches_3)

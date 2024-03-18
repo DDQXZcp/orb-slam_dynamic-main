@@ -229,34 +229,37 @@ Frame::Frame(const cv::Mat &mask, const cv::Mat &imGray, const cv::Mat &imDepth,
     mTimeORB_Ext = std::chrono::duration_cast<std::chrono::duration<double,std::milli> >(time_EndExtORB - time_StartExtORB).count();
 #endif
 
-    N = mvKeys.size();
-    
     int M = mvKeys.size();
     int num_erased = 0;
-
-    if(mvKeys.empty())
-        return;
 
     // Mask processing (similar to Mono-mask-Frame)
     std::vector<cv::KeyPoint> _mvKeys;
     cv::Mat _mDescriptors;
 
-    for (int i = 0; i < M; ++i){
-        int x_r = floor(mvKeys[i].pt.x);
-        int y_r = floor(mvKeys[i].pt.y);
-        if (mask.at<cv::Vec4b>(y_r, x_r)[1] > 0 || mask.at<cv::Vec4b>(y_r+1, x_r)[1] > 0 || mask.at<cv::Vec4b>(y_r, x_r+1)[1] > 0 || mask.at<cv::Vec4b>(y_r+1, x_r+1)[1] > 0){
-            num_erased++;
+    if (M<9000 && M!=0){
+        
+        int num=0;
+        for (int i =0; i< M; ++i){
+            int x_r = floor(mvKeys[i].pt.x);
+            int y_r = floor(mvKeys[i].pt.y);
+            // cout << "mask data" << mask.at<float>(y_r, x_r) << endl;
+            if (mask.at<cv::Vec4b>(y_r, x_r)[1]>0 ||mask.at<cv::Vec4b>(y_r+1, x_r)[1]>0 ||mask.at<cv::Vec4b>(y_r, x_r+1)[1]>0 || mask.at<cv::Vec4b>(y_r+1, x_r+1)[1]>0 ){
+                    num+=1;
+                }
+            else {
+                _mvKeys.push_back(mvKeys[i]);
+                _mDescriptors.push_back(mDescriptors.row(i));
+                }
         }
-        else {
-            _mvKeys.push_back(mvKeys[i]);
-            _mDescriptors.push_back(mDescriptors.row(i));
-        }
-    }
-    std::cout << "Number of features erased: " << num_erased << std::endl;
+        std::cout<< "Erase featrues number ="<<  num << std::endl;
 
-    mvKeys = _mvKeys;
-    mDescriptors = _mDescriptors;
+        mvKeys = _mvKeys;
+        mDescriptors =_mDescriptors;
+    }
     N = mvKeys.size();
+
+    if(mvKeys.empty())
+        return;
 
     UndistortKeyPoints();
 

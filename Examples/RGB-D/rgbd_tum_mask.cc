@@ -33,16 +33,16 @@ void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageF
 
 int main(int argc, char **argv)
 {
-    if(argc != 5)
+    if(argc != 4)
     {
-        cerr << endl << "Usage: ./rgbd_tum path_to_vocabulary path_to_settings path_to_sequence path_to_association path_to_mask" << endl;
+        cerr << endl << "Usage: ./rgbd_tum path_to_vocabulary path_to_settings path_to_sequence path_to_association" << endl;
         return 1;
     }
 
     // Retrieve paths to images
     vector<string> vstrImageFilenamesRGB, vstrImageFilenamesD, vstrMaskFilenames;
     vector<double> vTimestamps;
-    string strAssociationFilename = string(argv[4]);
+    string strAssociationFilename = string(argv[3]) + "/associate.txt";
     LoadImages(strAssociationFilename, vstrImageFilenamesRGB, vstrImageFilenamesD, vstrMaskFilenames, vTimestamps);
 
     // Check consistency in the number of images and depthmaps
@@ -72,7 +72,7 @@ int main(int argc, char **argv)
         // Read image, depthmap and mask from file
         imRGB = cv::imread(string(argv[3]) + "/" + vstrImageFilenamesRGB[ni], cv::IMREAD_UNCHANGED);
         imD = cv::imread(string(argv[3]) + "/" + vstrImageFilenamesD[ni], cv::IMREAD_UNCHANGED);
-        msk = cv::imread(string(argv[5]) + "/" + vstrMaskFilenames[ni], cv::IMREAD_UNCHANGED); // Load mask
+        msk = cv::imread(string(argv[3]) + "/" + vstrMaskFilenames[ni], cv::IMREAD_UNCHANGED); // Load mask
 
         double tframe = vTimestamps[ni];
 
@@ -147,6 +147,7 @@ void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageF
             ss >> t; // Read the timestamp again (if it's provided separately for Depth)
             ss >> sD;
             vstrImageFilenamesD.push_back(sD);
+            ss >> t;
             ss >> sMask; // Reading mask filename
             vstrMaskFilenames.push_back(sMask);
         }
