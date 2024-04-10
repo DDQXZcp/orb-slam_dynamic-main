@@ -50,16 +50,19 @@ with gr.Blocks() as app:
     gr.Markdown("# Trajectory Analysis")
     path_display = gr.Markdown(path_text)
     with gr.Row():
-        groundtruth_path = gr.Textbox(label="Groundtruth Trajectory Path", value = "/home/ubuntu/Downloads/rgbd_dataset_freiburg3_walking_xyz/groundtruth.txt")
-        trajectory1_path = gr.Textbox(label="Trajectory 1 Path", value = "/home/ubuntu/orb-slam_dynamic-main/FullFrameTrajectoryTUM_walk_masked.txt")
-        trajectory2_path = gr.Textbox(label="Trajectory 2 Path", value = "/home/ubuntu/orb-slam_dynamic-main/FullFrameTrajectoryTUM_walk_unmasked.txt")
+        groundtruth_path = gr.Textbox(label="Groundtruth Trajectory Path", value = "/home/ubuntu/Downloads/rgbd_dlo/groundtruth.txt")
+        trajectory1_path = gr.Textbox(label="Trajectory 1 Path", value = "/home/ubuntu/ORB_SLAM3/dlo_1.txt")
+        trajectory2_path = gr.Textbox(label="Trajectory 2 Path", value = "/home/ubuntu/orb-slam_dynamic-main/dlo_1.txt")
     with gr.Row():
         compute_btn = gr.Button("Compute ATE & RPE")
         visualize_btn = gr.Button("Visualize Trajectories")
-    with gr.Row():
-        plot_output_gt = gr.Plot(label="Groundtruth Trajectory Visualization")
-        plot_output_t1 = gr.Plot(label="Trajectory (with mask) Visualization")
-        plot_output_t2 = gr.Plot(label="Trajectory (without mask) Visualization")
+    # with gr.Row():
+    #     plot_output_gt = gr.Plot(label="Groundtruth Trajectory Visualization")
+    #     plot_output_t1 = gr.Plot(label="Trajectory (with mask) Visualization")
+    #     plot_output_t2 = gr.Plot(label="Trajectory (without mask) Visualization")
+    plot_output_gt = gr.Plot(label="Groundtruth Trajectory Visualization")
+    plot_output_t1 = gr.Plot(label="Trajectory (with mask) Visualization")
+    plot_output_t2 = gr.Plot(label="Trajectory (without mask) Visualization")
     with gr.Row():
         ate_output1 = gr.Text(label="ATE for Trajectory 1")
         ate_output2 = gr.Text(label="ATE for Trajectory 2")
