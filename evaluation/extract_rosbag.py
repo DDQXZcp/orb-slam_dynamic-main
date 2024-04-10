@@ -11,7 +11,7 @@ from geometry_msgs.msg import PoseStamped
 bridge = CvBridge()
 
 # Specify the ROS bag file
-bag_file = '/home/ubuntu/Downloads/rgbd_dlo.bag'
+bag_file = '/home/ubuntu/Downloads/rgbd_dlo_2.bag'
 
 # Determine the output folder name based on the bag file name (excluding the file extension)
 output_folder = os.path.splitext(bag_file)[0]

@@ -84,7 +84,7 @@ with gr.Blocks() as app:
 
     def visualize_all(groundtruth_path, trajectory1_path, trajectory2_path):
         # Load and parse the trajectory data
-        gt_data = associate.read_file_list_rotate(groundtruth_path, x=90)
+        gt_data = associate.read_file_list_rotate(groundtruth_path, x=-90)
         t1_data = associate.read_file_list(trajectory1_path)
         t2_data = associate.read_file_list(trajectory2_path)
         
