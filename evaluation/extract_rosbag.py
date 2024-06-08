@@ -3,6 +3,7 @@ import os
 import cv2
 import rospy
 import rosbag
+import argparse
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import PoseStamped
@@ -10,8 +11,13 @@ from geometry_msgs.msg import PoseStamped
 # Initialize the CvBridge class
 bridge = CvBridge()
 
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description="Extract RGB, Depth, and Ground Truth data from a ROS bag file.")
+parser.add_argument('bag_file', type=str, help='Path to the ROS bag file')
+args = parser.parse_args()
+
 # Specify the ROS bag file
-bag_file = '/home/ubuntu/Downloads/rgbd_dlo_2.bag'
+bag_file = args.bag_file
 
 # Determine the output folder name based on the bag file name (excluding the file extension)
 output_folder = os.path.splitext(bag_file)[0]
@@ -61,7 +67,7 @@ for topic, msg, t in bag.read_messages(topics=[rgb_topic, depth_topic, gt_topic]
         # Directly access pose attributes without an additional 'pose' nesting
         pose = msg.pose
         gt_txt_file.write(f"{timestamp} {pose.position.x} {pose.position.y} {pose.position.z} "
-                        f"{pose.orientation.x} {pose.orientation.y} {pose.orientation.z} {pose.orientation.w}\n")
+                          f"{pose.orientation.x} {pose.orientation.y} {pose.orientation.z} {pose.orientation.w}\n")
 
 # Close the bag file and txt files
 bag.close()

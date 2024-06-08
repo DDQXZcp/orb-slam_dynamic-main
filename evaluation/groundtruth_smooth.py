@@ -51,4 +51,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     input_file = sys.argv[1]
-    smooth_ground_truth(input_file)
+    smooth_ground_truth(input_file, window_size=10)
