@@ -252,6 +252,7 @@ Frame::Frame(const cv::Mat &mask, const cv::Mat &imGray, const cv::Mat &imDepth,
                 }
         }
         std::cout<< "Erase featrues number ="<<  num << std::endl;
+        numErased = num;
 
         mvKeys = _mvKeys;
         mDescriptors =_mDescriptors;
@@ -454,14 +455,6 @@ Frame::Frame( const cv::Mat &mask, const cv::Mat &imGray, const double &timeStam
     // cout <<"msk channel="<< mask.channels() << endl;
     // cout <<"msk size ="<< mask.size() << endl;
 
-    cv::Mat dilatedMask;
-    int dilation_size = 20;
-    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT,
-                                                 cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1),
-                                                 cv::Point(dilation_size, dilation_size));
-    cv::dilate(mask, dilatedMask, element);
- 
-    
     if (M<9000 && M!=0){
         
         int num=0;
@@ -469,7 +462,7 @@ Frame::Frame( const cv::Mat &mask, const cv::Mat &imGray, const double &timeStam
             int x_r = floor(mvKeys[i].pt.x);
             int y_r = floor(mvKeys[i].pt.y);
             // cout << "mask data" << mask.at<float>(y_r, x_r) << endl;
-            if (dilatedMask.at<cv::Vec4b>(y_r, x_r)[1]>0 ||dilatedMask.at<cv::Vec4b>(y_r+1, x_r)[1]>0 ||dilatedMask.at<cv::Vec4b>(y_r, x_r+1)[1]>0 || dilatedMask.at<cv::Vec4b>(y_r+1, x_r+1)[1]>0 ){
+            if (mask.at<cv::Vec4b>(y_r, x_r)[1]>0 ||mask.at<cv::Vec4b>(y_r+1, x_r)[1]>0 ||mask.at<cv::Vec4b>(y_r, x_r+1)[1]>0 || mask.at<cv::Vec4b>(y_r+1, x_r+1)[1]>0 ){
                     num+=1;
                 }
             else {
@@ -478,6 +471,7 @@ Frame::Frame( const cv::Mat &mask, const cv::Mat &imGray, const double &timeStam
                 }
         }
         std::cout<< "Erase featrues number ="<<  num << std::endl;
+        numErased = num;
 
         mvKeys = _mvKeys;
         mDescriptors =_mDescriptors;

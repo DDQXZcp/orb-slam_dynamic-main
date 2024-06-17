@@ -131,7 +131,6 @@ cv::Mat FrameDrawer::DrawFrame(bool bOldFeatures)
                 pt2.x=vCurrentKeys[i].pt.x+r;
                 pt2.y=vCurrentKeys[i].pt.y+r;
 
-                // Ensure x and y are within the bounds of the mask
                 if (mMask.empty())
                 {
                     std::cerr << "Warning: Mask is empty." << std::endl;
@@ -154,12 +153,6 @@ cv::Mat FrameDrawer::DrawFrame(bool bOldFeatures)
                     }
                     mnTracked++;
                 }
-                // if(vbMap[i])
-                // {
-                //     cv::rectangle(im,pt1,pt2,cv::Scalar(0,255,0)); // Apply mask here
-                //     cv::circle(im,vCurrentKeys[i].pt,2,cv::Scalar(0,255,0),-1); // Apply mask here
-                //     mnTracked++;
-                // }
                 else // This is match to a "visual odometry" MapPoint created in the last frame
                 {
                     cv::rectangle(im,pt1,pt2,cv::Scalar(255,0,0));
@@ -338,7 +331,7 @@ void FrameDrawer::DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText)
         int nMaps = mpAtlas->CountMaps();
         int nKFs = mpAtlas->KeyFramesInMap();
         int nMPs = mpAtlas->MapPointsInMap();
-        s << "Maps: " << nMaps << ", KFs: " << nKFs << ", MPs: " << nMPs << ", Matches: " << mnTracked;
+        s << "Maps: " << nMaps << ", KFs: " << nKFs << ", MPs: " << nMPs << ", Matches: " << mnTracked << ", Removed: " << mCurrentFrame.numErased;
         if(mnTrackedVO>0)
             s << ", + VO matches: " << mnTrackedVO;
     }

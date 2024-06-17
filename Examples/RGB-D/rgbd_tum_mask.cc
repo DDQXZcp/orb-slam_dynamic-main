@@ -73,6 +73,13 @@ int main(int argc, char **argv)
         imRGB = cv::imread(string(argv[3]) + "/" + vstrImageFilenamesRGB[ni], cv::IMREAD_UNCHANGED);
         imD = cv::imread(string(argv[3]) + "/" + vstrImageFilenamesD[ni], cv::IMREAD_UNCHANGED);
         msk = cv::imread(string(argv[3]) + "/" + vstrMaskFilenames[ni], cv::IMREAD_UNCHANGED); // Load mask
+        //Dilate the mask
+        cv::Mat dilatedMask;
+        int dilation_size = 10;
+        cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT,
+                                                    cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1),
+                                                    cv::Point(dilation_size, dilation_size));
+        cv::dilate(msk, dilatedMask, element);
 
         double tframe = vTimestamps[ni];
 
@@ -85,7 +92,7 @@ int main(int argc, char **argv)
         std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
 
         // Pass the images and mask to the SLAM system
-        SLAM.TrackRGBD(msk, imRGB, imD, tframe); // Modified SLAM system call
+        SLAM.TrackRGBD(dilatedMask, imRGB, imD, tframe); // Modified SLAM system call
 
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
 
