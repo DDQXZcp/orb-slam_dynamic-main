@@ -57,6 +57,11 @@ class Tracking
 {  
 
 public:
+    void SetMask(const cv::Mat &mask);
+    cv::Mat GetMask(); // Add this method to get the mask
+    cv::Mat mMask;
+
+public:
     Tracking(System* pSys, ORBVocabulary* pVoc, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Atlas* pAtlas,
              KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor, const string &_nameSeq=std::string());
 
@@ -186,6 +191,8 @@ public:
     vector<int> vnMapPointsLM;
 
 protected:
+
+    std::mutex mMutex; // Add this member variable for the mutex
 
     // Main tracking function. It is independent of the input sensor.
     void Track();

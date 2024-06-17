@@ -42,6 +42,10 @@ class FrameDrawer
 public:
     FrameDrawer(Atlas* pAtlas);
 
+    void SetMask(const cv::Mat &mask);
+    void UpdateMask(const cv::Mat &mask);
+    cv::Mat mMask;
+
     // Update info from the last processed frame.
     void Update(Tracking *pTracker);
 

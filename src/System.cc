@@ -277,7 +277,9 @@ cv::Mat System::TrackRGBD(const cv::Mat &mask, const cv::Mat &im, const cv::Mat 
     {
         cerr << "ERROR: you called TrackRGBD but input sensor was not set to RGBD." << endl;
         exit(-1);
-    }    
+    }
+
+    mpTracker->SetMask(mask);
 
     // Check mode change
     {
@@ -321,6 +323,7 @@ cv::Mat System::TrackRGBD(const cv::Mat &mask, const cv::Mat &im, const cv::Mat 
 
 
     cv::Mat Tcw = mpTracker->GrabImageRGBD(mask, im,depthmap,timestamp,filename);
+    mpFrameDrawer->SetMask(mpTracker->mMask);
 
     unique_lock<mutex> lock2(mMutexState);
     mTrackingState = mpTracker->mState;

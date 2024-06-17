@@ -493,6 +493,18 @@ Tracking::~Tracking()
 
 }
 
+void Tracking::SetMask(const cv::Mat &mask)
+{
+    std::unique_lock<std::mutex> lock(mMutex);
+    mMask = mask.clone();
+}
+
+cv::Mat Tracking::GetMask()
+{
+    std::unique_lock<std::mutex> lock(mMutex);
+    return mMask.clone(); // Ensure this returns a clone of the mask
+}
+
 bool Tracking::ParseCamParamFile(cv::FileStorage &fSettings)
 {
     mDistCoef = cv::Mat::zeros(4,1,CV_32F);

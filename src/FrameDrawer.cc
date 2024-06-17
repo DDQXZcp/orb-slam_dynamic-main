@@ -34,6 +34,12 @@ FrameDrawer::FrameDrawer(Atlas* pAtlas):both(false),mpAtlas(pAtlas)
     mImRight = cv::Mat(480,640,CV_8UC3, cv::Scalar(0,0,0));
 }
 
+void FrameDrawer::SetMask(const cv::Mat &mask)
+{
+    std::unique_lock<std::mutex> lock(mMutex);
+    mMask = mask.clone();
+}
+
 cv::Mat FrameDrawer::DrawFrame(bool bOldFeatures)
 {
     cv::Mat im;
@@ -125,13 +131,35 @@ cv::Mat FrameDrawer::DrawFrame(bool bOldFeatures)
                 pt2.x=vCurrentKeys[i].pt.x+r;
                 pt2.y=vCurrentKeys[i].pt.y+r;
 
-                // This is a match to a MapPoint in the map
-                if(vbMap[i])
+                // Ensure x and y are within the bounds of the mask
+                if (mMask.empty())
                 {
-                    cv::rectangle(im,pt1,pt2,cv::Scalar(0,255,0));
-                    cv::circle(im,vCurrentKeys[i].pt,2,cv::Scalar(0,255,0),-1);
+                    std::cerr << "Warning: Mask is empty." << std::endl;
+                }
+
+                // This is a match to a MapPoint in the map
+                if (vbMap[i])
+                {
+                    bool isInMask = (mMask.at<uchar>(vCurrentKeys[i].pt.y, vCurrentKeys[i].pt.x) > 0);
+                    // bool isInMask = true;
+                    if (isInMask)
+                    {
+                        cv::rectangle(im, pt1, pt2, cv::Scalar(0, 0, 255)); // Red rectangle for masked area
+                        cv::circle(im, vCurrentKeys[i].pt, 2, cv::Scalar(0, 0, 255), -1); // Red circle for masked area
+                    }
+                    else
+                    {
+                        cv::rectangle(im, pt1, pt2, cv::Scalar(0, 255, 0)); // Green rectangle
+                        cv::circle(im, vCurrentKeys[i].pt, 2, cv::Scalar(0, 255, 0), -1); // Green circle
+                    }
                     mnTracked++;
                 }
+                // if(vbMap[i])
+                // {
+                //     cv::rectangle(im,pt1,pt2,cv::Scalar(0,255,0)); // Apply mask here
+                //     cv::circle(im,vCurrentKeys[i].pt,2,cv::Scalar(0,255,0),-1); // Apply mask here
+                //     mnTracked++;
+                // }
                 else // This is match to a "visual odometry" MapPoint created in the last frame
                 {
                     cv::rectangle(im,pt1,pt2,cv::Scalar(255,0,0));

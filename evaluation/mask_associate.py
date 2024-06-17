@@ -25,3 +25,5 @@ def associate_and_write(parent_folder, output_file="associate.txt"):
                 f.write(f"{rgb_time} {rgb_info[rgb_time][0]} {depth_time} {depth_info[depth_time][0]} {rgb_time} mask/{mask_filename}\n")
 
     print(f"Associations written to {output_path}.")
+
+associate_and_write('/home/ubuntu/Downloads/rgbd_dlo_60')
