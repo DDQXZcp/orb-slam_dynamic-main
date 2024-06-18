@@ -187,8 +187,8 @@ if __name__=="__main__":
             
         ax.legend()
 
-        ax.set_xlim([-0.5, 5])
-        ax.set_ylim([-0.25, 0.1])
+        # ax.set_xlim([-0.82, -0.68])
+        # ax.set_ylim([-3.26, -3.19])
         ax.set_xlabel('x [m]')
         ax.set_ylabel('y [m]')
         plt.savefig(args.plot,dpi=90)
